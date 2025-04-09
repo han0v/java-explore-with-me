@@ -1,5 +1,5 @@
-FROM eclipse-temurin:17-jdk-jammy
-VOLUME /tmp
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+FROM openjdk:21-jdk-slim
+WORKDIR /app
+COPY target/ewm-stat-server.jar /app/ewm-stat-server.jar
+EXPOSE 9090
+CMD ["java", "-jar", "ewm-stat-server.jar"]
