@@ -30,42 +30,41 @@ services:
       SPRING_DATASOURCE_USERNAME: stats
       SPRING_DATASOURCE_PASSWORD: stats
     depends_on:
-      stats-db:
-        condition: service_healthy
+      - stats-db
     networks:
       - diploma-net
     ports:
       - "9090:9090"
 
-  ewm-db:
-    image: postgres:16.1
-    container_name: ewm-db
-    environment:
-      POSTGRES_USER: ewm
-      POSTGRES_PASSWORD: ewm
-      POSTGRES_DB: ewm
-    volumes:
-      - ewm-db-data:/var/lib/postgresql/data
-    networks:
-      - diploma-net
-    ports:
-      - "5434:5432"
+#  ewm-db:
+    #    image: postgres:16.1
+    #    container_name: ewm-db
+      #    environment:
+      #      POSTGRES_USER: ewm
+      #      POSTGRES_PASSWORD: ewm
+    #      POSTGRES_DB: ewm
+      #    volumes:
+    #      - ewm-db-data:/var/lib/postgresql/data
+      #    networks:
+    #      - diploma-net
+      #    ports:
+  #      - "5434:5432"
 
-  ewm-service:
-    build:
-      context: ./ewm-main-service
-      dockerfile: Dockerfile
-    container_name: ewm-service
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://ewm-db:5432/ewm
-      SPRING_DATASOURCE_USERNAME: ewm
-      SPRING_DATASOURCE_PASSWORD: ewm
-    depends_on:
-      - ewm-db
-    networks:
-      - diploma-net
-    ports:
-      - "8080:8080"
+    #  ewm-service:
+      #    build:
+      #      context: ./ewm-main-service
+    #      dockerfile: Dockerfile
+    #    container_name: ewm-service
+      #    environment:
+      #      SPRING_DATASOURCE_URL: jdbc:postgresql://ewm-db:5432/ewm
+      #     SPRING_DATASOURCE_USERNAME: ewm
+    #      SPRING_DATASOURCE_PASSWORD: ewm
+      #    depends_on:
+    #      - ewm-db
+      #    networks:
+    #      - diploma-net
+      #    ports:
+  #     - "8080:8080"
 
 volumes:
   stats-db-data:
