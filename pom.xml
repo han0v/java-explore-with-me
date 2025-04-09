@@ -20,9 +20,6 @@
 	<modules>
 		<module>ewm-stat-service</module>
 		<module>ewm-main-service</module>
-		<module>ewm-stat-service/ewm-stat-server</module>
-		<module>ewm-stat-service/ewm-stat-dto</module>
-		<module>ewm-stat-service/ewm-stat-client</module>
 	</modules>
 
 	<properties>

@@ -3,6 +3,7 @@ package ru.practicum.service;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import ru.practicum.ViewStats;
 import ru.practicum.model.EndpointHitEntity;
@@ -13,7 +14,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
+@ActiveProfiles("test")
 @Sql(scripts = "classpath:test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+
 public class StatsRepositoryTest {
     @Autowired
     private StatsRepository statsRepository;

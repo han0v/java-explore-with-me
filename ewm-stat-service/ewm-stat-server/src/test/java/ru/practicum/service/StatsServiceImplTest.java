@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import ru.practicum.EndpointHit;
 import ru.practicum.ViewStats;
@@ -15,6 +16,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
+@ActiveProfiles("test")
 @Import({StatsServiceImpl.class, EndpointHitMapperImpl.class})
 @Sql(scripts = "classpath:test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class StatsServiceImplTest {
