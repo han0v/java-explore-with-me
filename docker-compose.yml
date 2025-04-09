@@ -8,12 +8,17 @@ services:
       POSTGRES_USER: stats
       POSTGRES_PASSWORD: stats
       POSTGRES_DB: stats
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U stats -d stats" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     volumes:
       - stats-db-data:/var/lib/postgresql/data
     networks:
       - diploma-net
     ports:
-      - "5433:5432"  # Порт хоста:контейнера
+      - "5433:5432"
 
   stats-server:
     build:
@@ -25,7 +30,8 @@ services:
       SPRING_DATASOURCE_USERNAME: stats
       SPRING_DATASOURCE_PASSWORD: stats
     depends_on:
-      - stats-db
+      stats-db:
+        condition: service_healthy
     networks:
       - diploma-net
     ports:
