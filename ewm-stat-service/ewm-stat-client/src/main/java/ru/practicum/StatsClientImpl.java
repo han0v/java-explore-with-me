@@ -14,11 +14,15 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class StatsClientImpl implements StatsClient {
+    private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
+
     private final RestTemplate restTemplate;
 
     @Value("${stats-server.url:http://localhost:9090}")
@@ -68,6 +72,7 @@ public class StatsClientImpl implements StatsClient {
     }
 
     private String formatDateTime(LocalDateTime dateTime) {
-        return dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        Objects.requireNonNull(dateTime, "dateTime не может быть null");
+        return dateTime.format(DATE_TIME_FORMATTER);
     }
 }

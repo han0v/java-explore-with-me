@@ -50,11 +50,12 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse("Validation failed", errorMessage));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex) {
-        log.error("Unexpected error: {}", ex.getMessage(), ex);
+    @ExceptionHandler(Throwable.class)
+    public ResponseEntity<ErrorResponse> handleAllThrowable(Throwable ex) {
+        log.error("Unexpected error occurred: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("Internal error", "Unexpected server error"));
+                .body(new ErrorResponse("Internal Server Error",
+                        "An unexpected error occurred. Please contact support."));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -66,7 +67,7 @@ public class GlobalExceptionHandler {
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse("Validation Error", errorMsg));
         }
-        return handleAllExceptions(ex);
+        return handleAllThrowable(ex);
     }
 
     @Data

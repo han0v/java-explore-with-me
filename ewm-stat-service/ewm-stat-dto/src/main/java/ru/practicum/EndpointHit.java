@@ -7,14 +7,18 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
 
 @Data
 @Builder
+@Validated
 @AllArgsConstructor
 @NoArgsConstructor
 public class EndpointHit {
+    public static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+
     @NotBlank(message = "App name cannot be blank")
     private String app;
 
@@ -25,6 +29,6 @@ public class EndpointHit {
     private String ip;
 
     @NotNull(message = "Timestamp cannot be null")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = DATE_TIME_PATTERN)
     private LocalDateTime timestamp;
 }
