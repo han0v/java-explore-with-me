@@ -1,4 +1,4 @@
-package ru.practicum;
+package ru.practicum.stats_client;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import ru.practicum.EndpointHit;
+import ru.practicum.ViewStats;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

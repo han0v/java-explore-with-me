@@ -1,4 +1,7 @@
-package ru.practicum;
+package ru.practicum.stats_client;
+
+import ru.practicum.EndpointHit;
+import ru.practicum.ViewStats;
 
 import java.time.LocalDateTime;
 import java.util.List;
