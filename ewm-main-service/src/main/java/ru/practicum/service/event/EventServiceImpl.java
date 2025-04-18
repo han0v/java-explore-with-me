@@ -24,6 +24,7 @@ import ru.practicum.repository.event.EventRepository;
 import ru.practicum.repository.request.RequestRepository;
 import ru.practicum.repository.user.UserRepository;
 import ru.practicum.stats_client.StatsClient;
+import ru.practicum.stats_client.StatsClientException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -301,16 +302,33 @@ public class EventServiceImpl implements EventService {
 
     private long getViews(Long eventId) {
         try {
+            LocalDateTime start = LocalDateTime.now().minusYears(1);
+            LocalDateTime end = LocalDateTime.now();
+            String uri = "/events/" + eventId;
+
+            log.debug("Getting stats for uri: {}, start: {}, end: {}", uri, start, end);
+
             List<ViewStats> stats = statsClient.getStats(
-                    LocalDateTime.now().minusYears(1),
-                    LocalDateTime.now(),
-                    List.of("/events/" + eventId),
+                    start,
+                    end,
+                    List.of(uri),
                     true
             );
-            return stats != null && !stats.isEmpty() ? stats.get(0).getHits() : 0L;
+
+            if (stats == null || stats.isEmpty()) {
+                log.debug("No stats found for event {}", eventId);
+                return 0L;
+            }
+
+            long views = stats.get(0).getHits();
+            log.debug("Retrieved views for event {}: {}", eventId, views);
+            return views;
+        } catch (StatsClientException e) {
+            log.error("Stats client error for event {}: {}", eventId, e.getMessage());
+            return 0L;
         } catch (Exception e) {
-            log.error("Error getting views for event {}: {}", eventId, e.getMessage());
-            return 0;
+            log.error("Unexpected error getting views for event {}: {}", eventId, e.getMessage());
+            return 0L;
         }
     }
 

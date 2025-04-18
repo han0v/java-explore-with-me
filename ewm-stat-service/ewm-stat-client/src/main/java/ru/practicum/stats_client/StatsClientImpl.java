@@ -13,10 +13,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 import ru.practicum.EndpointHit;
 import ru.practicum.ViewStats;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @Component
@@ -38,9 +38,10 @@ public class StatsClientImpl implements StatsClient {
                     hit,
                     Void.class
             );
+            log.info("Hit successfully saved: {}", hit);
         } catch (HttpClientErrorException e) {
-            log.error("Ошибка при сохранении статистики: {}", e.getMessage());
-            throw new StatsClientException("Ошибка сохранения hit");
+            log.error("Error saving hit: {}", e.getMessage());
+            throw new StatsClientException("Error saving hit: " + e.getMessage());
         }
     }
 
@@ -48,33 +49,34 @@ public class StatsClientImpl implements StatsClient {
     public List<ViewStats> getStats(LocalDateTime start, LocalDateTime end,
                                     List<String> uris, boolean unique) {
         try {
-            UriComponentsBuilder builder = UriComponentsBuilder
-                    .fromUriString(serverUrl + "/stats")
-                    .queryParam("start", formatDateTime(start))
-                    .queryParam("end", formatDateTime(end))
+            // Создаем URI с параметрами без ручного кодирования
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(serverUrl + "/stats")
+                    .queryParam("start", start.format(DATE_TIME_FORMATTER))
+                    .queryParam("end", end.format(DATE_TIME_FORMATTER))
                     .queryParam("unique", unique);
 
             if (uris != null && !uris.isEmpty()) {
                 builder.queryParam("uris", String.join(",", uris));
             }
 
+            // Используем URI объект вместо строки
+            URI uri = builder.build().toUri();
+            log.debug("Requesting stats with URI: {}", uri);
+
             ResponseEntity<List<ViewStats>> response = restTemplate.exchange(
-                    builder.toUriString(),
+                    uri,
                     HttpMethod.GET,
                     null,
-                    new ParameterizedTypeReference<>() {
-                    }
+                    new ParameterizedTypeReference<>() {}
             );
 
             return response.getBody();
         } catch (HttpClientErrorException e) {
-            log.error("Ошибка при получении статистики: {}", e.getMessage());
-            throw new StatsClientException("Ошибка получения stats");
+            log.error("Error getting stats: {}", e.getMessage());
+            throw new StatsClientException("Error getting stats: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("Unexpected error getting stats: {}", e.getMessage());
+            throw new StatsClientException("Unexpected error getting stats: " + e.getMessage());
         }
-    }
-
-    private String formatDateTime(LocalDateTime dateTime) {
-        Objects.requireNonNull(dateTime, "dateTime не может быть null");
-        return dateTime.format(DATE_TIME_FORMATTER);
     }
 }

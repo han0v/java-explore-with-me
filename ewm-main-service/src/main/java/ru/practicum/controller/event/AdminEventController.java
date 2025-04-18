@@ -5,8 +5,10 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.UpdateEventAdminRequest;
 import ru.practicum.model.EventState;
@@ -36,38 +38,51 @@ public class AdminEventController {
             @RequestParam(defaultValue = "0") @Min(0) @PositiveOrZero int from,
             @RequestParam(defaultValue = "10") @Min(1) @Positive int size) {
 
+        LocalDateTime startDateTime = null;
+        LocalDateTime endDateTime = null;
 
-        LocalDateTime parsedRangeStart = parseDateTime(rangeStart);
-        LocalDateTime parsedRangeEnd = parseDateTime(rangeEnd);
+        try {
+            startDateTime = rangeStart != null ? parseDateTime(rangeStart) : null;
+            endDateTime = rangeEnd != null ? parseDateTime(rangeEnd) : null;
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
 
-        return eventService.searchEvents(
-                users,
-                states,
-                categories,
-                parsedRangeStart,
-                parsedRangeEnd,
-                from,
-                size
-        );
+        if (startDateTime != null && endDateTime != null && startDateTime.isAfter(endDateTime)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Дата начала диапазона должна быть раньше даты окончания");
+        }
+
+        try {
+            return eventService.searchEvents(
+                    users,
+                    states,
+                    categories,
+                    startDateTime,
+                    endDateTime,
+                    from,
+                    size
+            );
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Ошибка при поиске событий", e);
+        }
     }
 
     private LocalDateTime parseDateTime(String dateTime) {
-        if (dateTime == null) {
-            return null;
-        }
         try {
             return LocalDateTime.parse(dateTime, FORMATTER);
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Invalid datetime format. Expected: yyyy-MM-dd HH:mm:ss");
+            throw new IllegalArgumentException("Некорректный формат даты. Ожидается: yyyy-MM-dd HH:mm:ss");
         }
     }
-
 
     @PatchMapping("/{eventId}")
     public EventFullDto updateEvent(@PathVariable Long eventId,
                                     @Valid @RequestBody UpdateEventAdminRequest request) {
         if (request.getEventDate() != null && request.getEventDate().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Event date cannot be in the past");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Дата события не может быть в прошлом");
         }
         return eventService.updateEventByAdmin(eventId, request);
     }
