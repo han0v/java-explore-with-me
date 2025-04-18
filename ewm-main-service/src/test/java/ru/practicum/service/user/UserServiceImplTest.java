@@ -18,7 +18,6 @@ import ru.practicum.model.User;
 import ru.practicum.repository.user.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;

@@ -301,7 +301,7 @@ public class EventServiceImpl implements EventService {
 
     private long getViews(Long eventId) {
         try {
-            List<ViewStats> stats = statsClient.getStats( // Изменено на statsClient
+            List<ViewStats> stats = statsClient.getStats(
                     LocalDateTime.now().minusYears(1),
                     LocalDateTime.now(),
                     List.of("/events/" + eventId),
