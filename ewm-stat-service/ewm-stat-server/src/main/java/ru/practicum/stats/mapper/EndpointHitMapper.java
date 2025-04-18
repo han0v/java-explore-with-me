@@ -1,9 +1,9 @@
-package ru.practicum.mapper;
+package ru.practicum.stats.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.practicum.EndpointHit;
-import ru.practicum.model.EndpointHitEntity;
+import ru.practicum.stats.model.EndpointHitEntity;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;

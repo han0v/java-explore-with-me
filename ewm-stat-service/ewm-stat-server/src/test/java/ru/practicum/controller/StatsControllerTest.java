@@ -8,7 +8,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.EndpointHit;
 import ru.practicum.ViewStats;
-import ru.practicum.service.StatsService;
+import ru.practicum.stats.controller.StatsController;
+import ru.practicum.stats.service.StatsService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

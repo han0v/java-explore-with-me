@@ -8,7 +8,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import ru.practicum.EndpointHit;
 import ru.practicum.ViewStats;
-import ru.practicum.mapper.EndpointHitMapperImpl;
+import ru.practicum.stats.mapper.EndpointHitMapperImpl;
+import ru.practicum.stats.service.StatsServiceImpl;
 
 import java.time.LocalDateTime;
 import java.util.List;

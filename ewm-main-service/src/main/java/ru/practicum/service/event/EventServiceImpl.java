@@ -23,7 +23,7 @@ import ru.practicum.repository.category.CategoryRepository;
 import ru.practicum.repository.event.EventRepository;
 import ru.practicum.repository.request.RequestRepository;
 import ru.practicum.repository.user.UserRepository;
-import ru.practicum.service.StatsService;
+import ru.practicum.stats_client.StatsClient;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,7 +37,7 @@ public class EventServiceImpl implements EventService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final RequestRepository requestRepository;
-    private final StatsService statsService;
+    private final StatsClient statsClient;
     private final EventMapper eventMapper;
     private final RequestMapper requestMapper;
 
@@ -86,6 +86,10 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new NotFoundException("Event not found"));
 
+        if (event.getState() == EventState.PUBLISHED) {
+            throw new ConflictException("Cannot modify published event");
+        }
+
         if (updateRequest.getStateAction() != null) {
             switch (updateRequest.getStateAction()) {
                 case "SEND_TO_REVIEW":
@@ -107,14 +111,33 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<EventFullDto> searchEvents(List<Long> users, List<EventState> states,
-                                           List<Long> categories, LocalDateTime rangeStart,
-                                           LocalDateTime rangeEnd, int from, int size) {
-        Pageable pageable = PageRequest.of(from / size, size);
-        List<Event> events = eventRepository.findEventsByAdminParams(users, states, categories, rangeStart, rangeEnd, pageable);
+    public List<EventFullDto> searchEvents(
+            List<Long> users,
+            List<EventState> states,
+            List<Long> categories,
+            LocalDateTime rangeStart,
+            LocalDateTime rangeEnd,
+            int from,
+            int size) {
+
+        Pageable pageable = PageRequest.of(
+                from / size,
+                size,
+                Sort.by("eventDate").descending()
+        );
+
+        List<Event> events = eventRepository.findEventsByAdminParams(
+                users, states, categories,
+                rangeStart, rangeEnd,
+                pageable
+        );
 
         return events.stream()
-                .map(event -> eventMapper.toEventFullDto(event, getConfirmedRequests(event.getId()), getViews(event.getId())))
+                .map(event -> eventMapper.toEventFullDto(
+                        event,
+                        getConfirmedRequests(event.getId()),
+                        getViews(event.getId())
+                ))
                 .collect(Collectors.toList());
     }
 
@@ -208,6 +231,11 @@ public class EventServiceImpl implements EventService {
             throw new ConflictException("Participant limit reached");
         }
 
+        int slotsOnEvent = event.getParticipantLimit() - (int) getConfirmedRequests(eventId);
+        if (slotsOnEvent <= 0) {
+            throw new ConflictException("Participant limit reached");
+        }
+
         List<ParticipationRequest> requests = requestRepository.findAllByIdInAndEventId(updateRequest.getRequestIds(), eventId);
 
         if (requests.stream().anyMatch(r -> r.getStatus() != RequestStatus.PENDING)) {
@@ -273,7 +301,7 @@ public class EventServiceImpl implements EventService {
 
     private long getViews(Long eventId) {
         try {
-            List<ViewStats> stats = statsService.getStats(
+            List<ViewStats> stats = statsClient.getStats( // Изменено на statsClient
                     LocalDateTime.now().minusYears(1),
                     LocalDateTime.now(),
                     List.of("/events/" + eventId),
@@ -294,7 +322,7 @@ public class EventServiceImpl implements EventService {
                     .ip(request.getRemoteAddr())
                     .timestamp(LocalDateTime.now())
                     .build();
-            statsService.saveHit(hit);
+            statsClient.saveHit(hit); // Изменено на statsClient
         } catch (Exception e) {
             log.error("Error saving view stats: {}", e.getMessage());
         }

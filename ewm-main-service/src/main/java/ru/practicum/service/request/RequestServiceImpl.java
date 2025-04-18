@@ -4,12 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.participationRequest.ParticipationRequestDto;
+import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.mapper.RequestMapper;
-import ru.practicum.model.Event;
-import ru.practicum.model.ParticipationRequest;
-import ru.practicum.model.RequestStatus;
-import ru.practicum.model.User;
+import ru.practicum.model.*;
 import ru.practicum.repository.event.EventRepository;
 import ru.practicum.repository.request.RequestRepository;
 import ru.practicum.repository.user.UserRepository;
@@ -44,11 +42,32 @@ public class RequestServiceImpl implements RequestService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event not found"));
 
+        if (event.getInitiator().getId().equals(userId)) {
+            throw new ConflictException("Initiator cannot create request");
+        }
+
+        if (event.getState() != EventState.PUBLISHED) {
+            throw new ConflictException("Event is not published");
+        }
+
+
+        long confirmed = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.PENDING);
+        if (event.getParticipantLimit() > 0 && confirmed >= event.getParticipantLimit()) {
+            throw new ConflictException("Participant limit reached");
+        }
+
+        if (requestRepository.existsByRequesterIdAndEventId(userId, eventId)) {
+            throw new ConflictException("Request already exists");
+        }
+
+        boolean autoConfirm = event.getParticipantLimit() == 0;
+        RequestStatus status = autoConfirm ? RequestStatus.CONFIRMED : RequestStatus.PENDING;
+
         ParticipationRequest request = ParticipationRequest.builder()
                 .requester(user)
                 .event(event)
                 .created(now)
-                .status(RequestStatus.CONFIRMED)
+                .status(status)
                 .build();
 
         return requestMapper.toParticipationRequestDto(requestRepository.save(request));
@@ -58,6 +77,11 @@ public class RequestServiceImpl implements RequestService {
     public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
         ParticipationRequest request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new NotFoundException("Request not found"));
+
+        if (request.getStatus() == RequestStatus.CONFIRMED) {
+            throw new ConflictException("Cannot cancel confirmed request");
+        }
+
         if (!request.getRequester().getId().equals(userId)) {
             throw new NotFoundException("Request does not belong to user");
         }

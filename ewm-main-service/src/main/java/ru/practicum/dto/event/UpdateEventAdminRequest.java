@@ -2,7 +2,10 @@ package ru.practicum.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +21,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Validated
 public class UpdateEventAdminRequest {
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     @Size(min = 20, max = 2000, message = "Annotation must be between 20 and 2000 characters")
     private String annotation;
 
@@ -28,7 +32,7 @@ public class UpdateEventAdminRequest {
     private String description;
 
     @Future(message = "Event date must be in the future")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = DATE_TIME_FORMAT)
     private LocalDateTime eventDate;
 
     @Valid

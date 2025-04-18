@@ -5,7 +5,6 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import ru.practicum.dto.event.*;
 import ru.practicum.model.Event;
-import ru.practicum.model.EventState;
 
 @Mapper(componentModel = "spring", uses = {UserMapper.class, CategoryMapper.class})
 public interface EventMapper {
@@ -13,7 +12,8 @@ public interface EventMapper {
     @Mapping(target = "initiator", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "state", expression = "java(ru.practicum.model.EventState.PENDING)")
-    @Mapping(target = "createdOn", expression = "java(java.time.LocalDateTime.now())") // добавляем это
+    @Mapping(target = "createdOn", expression = "java(java.time.LocalDateTime.now())")
+        // добавляем это
     Event toEvent(NewEventDto newEventDto);
 
 

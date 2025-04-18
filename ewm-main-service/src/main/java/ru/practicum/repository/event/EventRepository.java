@@ -3,7 +3,6 @@ package ru.practicum.repository.event;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import ru.practicum.model.Event;
 import ru.practicum.model.EventSort;
 import ru.practicum.model.EventState;
@@ -13,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EventRepository extends JpaRepository<Event, Long>, EventRepositoryCustom {
+    boolean existsByCategoryId(Long categoryId);
 
     List<Event> findAllByInitiatorId(Long initiatorId, Pageable pageable);
 
@@ -52,8 +52,6 @@ public interface EventRepository extends JpaRepository<Event, Long>, EventReposi
                                  LocalDateTime rangeEnd,
                                  Boolean onlyAvailable,
                                  Pageable pageable);
-
-
 
 
     List<Event> findPublicEventsWithFilters(

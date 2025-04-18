@@ -3,7 +3,10 @@ package ru.practicum.dto.event;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import ru.practicum.model.Location;
 
@@ -15,6 +18,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Validated
 public class NewEventDto {
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     @NotBlank(message = "Annotation cannot be blank")
     @Size(min = 20, max = 2000, message = "Annotation must be between 20 and 2000 characters")
     private String annotation;
@@ -29,7 +33,7 @@ public class NewEventDto {
 
     @NotNull(message = "Event date cannot be null")
     @Future(message = "Event date must be in the future")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = DATE_TIME_FORMAT)
     private LocalDateTime eventDate;
 
     @NotNull(message = "Location cannot be null")
@@ -50,52 +54,4 @@ public class NewEventDto {
     @Size(min = 3, max = 120, message = "Title must be between 3 and 120 characters")
     private String title;
 
-    // Кастомный Builder с ручной валидацией
-    public static class NewEventDtoBuilder {
-        private String annotation;
-        private String description;
-        private String title;
-        private Integer participantLimit = 0;
-
-        public NewEventDtoBuilder annotation(String annotation) {
-            if (annotation == null || annotation.trim().isEmpty()) {
-                throw new IllegalArgumentException("Annotation cannot be blank or contain only spaces");
-            }
-            if (annotation.length() < 20 || annotation.length() > 2000) {
-                throw new IllegalArgumentException("Annotation must be between 20 and 2000 characters");
-            }
-            this.annotation = annotation;
-            return this;
-        }
-
-        public NewEventDtoBuilder description(String description) {
-            if (description == null || description.trim().isEmpty()) {
-                throw new IllegalArgumentException("Description cannot be blank or contain only spaces");
-            }
-            if (description.length() < 20 || description.length() > 7000) {
-                throw new IllegalArgumentException("Description must be between 20 and 7000 characters");
-            }
-            this.description = description;
-            return this;
-        }
-
-        public NewEventDtoBuilder title(String title) {
-            if (title == null || title.trim().isEmpty()) {
-                throw new IllegalArgumentException("Title cannot be blank or contain only spaces");
-            }
-            if (title.length() < 3 || title.length() > 120) {
-                throw new IllegalArgumentException("Title must be between 3 and 120 characters");
-            }
-            this.title = title;
-            return this;
-        }
-
-        public NewEventDtoBuilder participantLimit(Integer participantLimit) {
-            if (participantLimit != null && participantLimit < 0) {
-                throw new IllegalArgumentException("Participant limit cannot be negative");
-            }
-            this.participantLimit = participantLimit != null ? participantLimit : 0;
-            return this;
-        }
-    }
 }

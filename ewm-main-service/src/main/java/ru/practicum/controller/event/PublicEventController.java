@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.EventShortDto;
+import ru.practicum.exception.DateTimeValidationException;
 import ru.practicum.model.EventSort;
 import ru.practicum.service.event.EventService;
 
@@ -26,15 +27,16 @@ import java.util.List;
 public class PublicEventController {
 
     private final EventService eventService;
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     @GetMapping
     public List<EventShortDto> getAllPublicEvents(@RequestParam(required = false) String text,
                                                   @RequestParam(required = false) List<Long> categories,
                                                   @RequestParam(required = false) Boolean paid,
                                                   @RequestParam(required = false)
-                                                  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+                                                  @DateTimeFormat(pattern = DATE_TIME_FORMAT) LocalDateTime rangeStart,
                                                   @RequestParam(required = false)
-                                                  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+                                                  @DateTimeFormat(pattern = DATE_TIME_FORMAT) LocalDateTime rangeEnd,
                                                   @RequestParam(defaultValue = "false") Boolean onlyAvailable,
                                                   @RequestParam(defaultValue = "EVENT_DATE") String sort,
                                                   @RequestParam(defaultValue = "0") @PositiveOrZero int from,
@@ -44,7 +46,7 @@ public class PublicEventController {
         log.info("endpoint path: {}", request.getRequestURI());
 
         if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
-            throw new IllegalArgumentException("Start date must be before end date");
+            throw new DateTimeValidationException("Start date must be before end date");
         }
 
         EventSort sortType;

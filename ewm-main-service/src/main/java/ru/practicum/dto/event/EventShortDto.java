@@ -15,12 +15,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventShortDto {
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private Long id;
     private String title;
     private String annotation;
     private CategoryDto category;
     private UserShortDto initiator;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = DATE_TIME_FORMAT)
     private LocalDateTime eventDate;
     private Boolean paid;
     private Long confirmedRequests;

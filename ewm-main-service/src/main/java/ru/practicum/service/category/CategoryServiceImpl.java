@@ -12,6 +12,7 @@ import ru.practicum.exception.NotFoundException;
 import ru.practicum.mapper.CategoryMapper;
 import ru.practicum.model.Category;
 import ru.practicum.repository.category.CategoryRepository;
+import ru.practicum.repository.event.EventRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
+    private final EventRepository eventRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 
@@ -35,18 +37,31 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void deleteCategory(Long catId) {
-        categoryRepository.deleteById(catId);
+        Category category = categoryRepository.findById(catId)
+                .orElseThrow(() -> new NotFoundException("Category not found"));
+
+        if (eventRepository.existsByCategoryId(catId)) {
+            throw new ConflictException("Cannot delete category with associated events");
+        }
+
+        categoryRepository.delete(category);
     }
 
     @Override
     @Transactional
     public CategoryDto updateCategory(Long catId, NewCategoryDto newCategoryDto) {
-        if (categoryRepository.existsByName(newCategoryDto.getName())) {
-            throw new ConflictException("Category name already exists");
-        }
         Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException("Category not found"));
-        category.setName(newCategoryDto.getName());
+
+        String newName = newCategoryDto.getName();
+
+        if (!category.getName().equals(newName)) {
+            if (categoryRepository.existsByNameAndIdNot(newName, catId)) {
+                throw new ConflictException("Category name already exists");
+            }
+            category.setName(newName);
+        }
+
         return categoryMapper.toCategoryDto(categoryRepository.save(category));
     }
 

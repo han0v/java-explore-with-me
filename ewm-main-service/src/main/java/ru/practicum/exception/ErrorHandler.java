@@ -2,6 +2,7 @@ package ru.practicum.exception;
 
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,6 +22,16 @@ public class ErrorHandler {
         return ApiError.builder()
                 .status(String.valueOf(HttpStatus.NOT_FOUND))
                 .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        return ApiError.builder()
+                .status(HttpStatus.CONFLICT.toString())
+                .message("Request body is required")
                 .timestamp(LocalDateTime.now())
                 .build();
     }
@@ -86,6 +97,17 @@ public class ErrorHandler {
         return ApiError.builder()
                 .status(String.valueOf(HttpStatus.NOT_FOUND))
                 .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleDateValidationException(DateTimeValidationException e) {
+        return ApiError.builder()
+                .status(HttpStatus.BAD_REQUEST.toString())
+                .message(e.getMessage())
+                .reason("Incorrect date range")
                 .timestamp(LocalDateTime.now())
                 .build();
     }

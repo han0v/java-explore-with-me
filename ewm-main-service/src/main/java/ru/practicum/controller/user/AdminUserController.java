@@ -33,7 +33,7 @@ public class AdminUserController {
     public List<UserDto> getUsers(
             @RequestParam(required = false) List<Long> ids,
             @RequestParam(defaultValue = "0") @Min(0) Integer from,
-            @RequestParam(defaultValue = "10") @Min(1) @Max(100) Integer size) {
+            @RequestParam(defaultValue = "10") @Min(1) Integer size) {
         return userService.getUsers(ids, from, size);
     }
 

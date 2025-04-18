@@ -8,8 +8,12 @@ import java.util.List;
 
 public interface CompilationService {
     CompilationDto create(NewCompilationDto dto);
+
     void delete(Long compId);
+
     CompilationDto update(Long compId, UpdateCompilationRequest dto);
+
     List<CompilationDto> findAll(Boolean pinned, int from, int size);
+
     CompilationDto findById(Long compId);
 }

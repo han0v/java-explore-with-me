@@ -1,6 +1,7 @@
 package ru.practicum.controller.event;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,6 @@ import ru.practicum.service.event.EventService;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -27,42 +27,41 @@ public class AdminEventController {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @GetMapping
-    public List<EventFullDto> searchEvents(@RequestParam(required = false) List<Long> users,
-                                           @RequestParam(required = false) List<EventState> states,
-                                           @RequestParam(required = false) List<Long> categories,
-                                           @RequestParam(required = false) String rangeStart,
-                                           @RequestParam(required = false) String rangeEnd,
-                                           @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                           @RequestParam(defaultValue = "10") @Positive int size) {
-        LocalDateTime parsedRangeStart = null;
-        LocalDateTime parsedRangeEnd = null;
+    public List<EventFullDto> searchEvents(
+            @RequestParam(required = false) List<Long> users,
+            @RequestParam(required = false) List<EventState> states,
+            @RequestParam(required = false) List<Long> categories,
+            @RequestParam(required = false) String rangeStart,
+            @RequestParam(required = false) String rangeEnd,
+            @RequestParam(defaultValue = "0") @Min(0) @PositiveOrZero int from,
+            @RequestParam(defaultValue = "10") @Min(1) @Positive int size) {
 
-        if (rangeStart != null) {
-            try {
-                parsedRangeStart = LocalDateTime.parse(rangeStart, FORMATTER);
-            } catch (DateTimeParseException e) {
-                throw new IllegalArgumentException("Invalid format for rangeStart. Expected format: yyyy-MM-dd HH:mm:ss");
-            }
-        }
 
-        if (rangeEnd != null) {
-            try {
-                parsedRangeEnd = LocalDateTime.parse(rangeEnd, FORMATTER);
-            } catch (DateTimeParseException e) {
-                throw new IllegalArgumentException("Invalid format for rangeEnd. Expected format: yyyy-MM-dd HH:mm:ss");
-            }
-        }
+        LocalDateTime parsedRangeStart = parseDateTime(rangeStart);
+        LocalDateTime parsedRangeEnd = parseDateTime(rangeEnd);
 
         return eventService.searchEvents(
-                users != null ? users : Collections.emptyList(),
-                states != null ? states : Collections.emptyList(),
-                categories != null ? categories : Collections.emptyList(),
+                users,
+                states,
+                categories,
                 parsedRangeStart,
                 parsedRangeEnd,
                 from,
                 size
         );
     }
+
+    private LocalDateTime parseDateTime(String dateTime) {
+        if (dateTime == null) {
+            return null;
+        }
+        try {
+            return LocalDateTime.parse(dateTime, FORMATTER);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid datetime format. Expected: yyyy-MM-dd HH:mm:ss");
+        }
+    }
+
 
     @PatchMapping("/{eventId}")
     public EventFullDto updateEvent(@PathVariable Long eventId,
