@@ -50,10 +50,14 @@ public class AdminEventController {
             }
         }
 
+        List<Long> filteredUsers = (users == null || users.isEmpty()) ? null : users;
+        List<EventState> filteredStates = (stateEnums == null || stateEnums.isEmpty()) ? null : stateEnums;
+        List<Long> filteredCategories = (categories == null || categories.isEmpty()) ? null : categories;
+
         return eventService.searchEvents(
-                users,
-                stateEnums,
-                categories,
+                filteredUsers,
+                filteredStates,
+                filteredCategories,
                 parseDateTime(rangeStart),
                 parseDateTime(rangeEnd),
                 from,

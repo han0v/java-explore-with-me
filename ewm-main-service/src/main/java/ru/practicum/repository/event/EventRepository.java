@@ -24,9 +24,9 @@ public interface EventRepository extends JpaRepository<Event, Long>, EventReposi
     Optional<Event> findByIdAndState(Long id, EventState state);
 
     @Query("SELECT e FROM Event e " +
-            "WHERE (:users IS NULL OR e.initiator.id IN :users) " +
-            "AND (:states IS NULL OR e.state IN :states) " +
-            "AND (:categories IS NULL OR e.category.id IN :categories) " +
+            "WHERE (COALESCE(:users, NULL) IS NULL OR e.initiator.id IN (:users) " +
+            "AND (COALESCE(:states, NULL) IS NULL OR e.state IN (:states) " +
+            "AND (COALESCE(:categories, NULL) IS NULL OR e.category.id IN (:categories) " +
             "AND (:rangeStart IS NULL OR e.eventDate >= :rangeStart) " +
             "AND (:rangeEnd IS NULL OR e.eventDate <= :rangeEnd)")
     List<Event> findEventsByAdminParams(
@@ -35,7 +35,8 @@ public interface EventRepository extends JpaRepository<Event, Long>, EventReposi
             @Param("categories") List<Long> categories,
             @Param("rangeStart") LocalDateTime rangeStart,
             @Param("rangeEnd") LocalDateTime rangeEnd,
-            Pageable pageable);
+            Pageable pageable
+    );
 
 
     @Query("SELECT e FROM Event e " +
