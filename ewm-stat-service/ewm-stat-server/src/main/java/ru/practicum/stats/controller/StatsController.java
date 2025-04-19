@@ -35,31 +35,25 @@ public class StatsController {
 
     @GetMapping("/stats")
     public ResponseEntity<List<ViewStats>> getStats(
-            @RequestParam
-            @DateTimeFormat(pattern = DATE_TIME_PATTERN)
-            String start,
-
-            @RequestParam
-            @DateTimeFormat(pattern = DATE_TIME_PATTERN)
-            String end,
-
-            @RequestParam(required = false)
-            List<String> uris,
-
-            @RequestParam(defaultValue = "false")
-            Boolean unique) {
+            @RequestParam(required = false) String start,
+            @RequestParam(required = false) String end,
+            @RequestParam(required = false) List<String> uris,
+            @RequestParam(defaultValue = "false") Boolean unique) {
 
         if (start == null || end == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Start and end parameters are required");
         }
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
         LocalDateTime startDateTime;
         LocalDateTime endDateTime;
+
         try {
-            startDateTime = LocalDateTime.parse(start, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
-            endDateTime = LocalDateTime.parse(end, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
+            startDateTime = LocalDateTime.parse(start, formatter);
+            endDateTime = LocalDateTime.parse(end, formatter);
         } catch (DateTimeParseException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date format. Expected: " + DATE_TIME_PATTERN);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Invalid date format. Expected: " + DATE_TIME_PATTERN);
         }
 
         if (startDateTime.isAfter(endDateTime)) {
