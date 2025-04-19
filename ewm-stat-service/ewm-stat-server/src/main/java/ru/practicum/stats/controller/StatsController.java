@@ -9,12 +9,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.EndpointHit;
 import ru.practicum.ViewStats;
 import ru.practicum.stats.service.StatsService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Controller
@@ -36,12 +38,10 @@ public class StatsController {
     public ResponseEntity<List<ViewStats>> getStats(
             @RequestParam
             @DateTimeFormat(pattern = DATE_TIME_PATTERN)
-            @NotNull
             String start,
 
             @RequestParam
             @DateTimeFormat(pattern = DATE_TIME_PATTERN)
-            @NotNull
             String end,
 
             @RequestParam(required = false)
@@ -50,8 +50,22 @@ public class StatsController {
             @RequestParam(defaultValue = "false")
             Boolean unique) {
 
-        LocalDateTime startDateTime = LocalDateTime.parse(start, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
-        LocalDateTime endDateTime = LocalDateTime.parse(end, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
+        if (start == null || end == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Start and end parameters are required");
+        }
+
+        LocalDateTime startDateTime;
+        LocalDateTime endDateTime;
+        try {
+            startDateTime = LocalDateTime.parse(start, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
+            endDateTime = LocalDateTime.parse(end, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
+        } catch (DateTimeParseException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date format. Expected: " + DATE_TIME_PATTERN);
+        }
+
+        if (startDateTime.isAfter(endDateTime)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Start date must be before end date");
+        }
 
         return ResponseEntity.ok(statsService.getStats(startDateTime, endDateTime, uris, unique));
     }
