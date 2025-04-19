@@ -38,42 +38,38 @@ public class AdminEventController {
             @RequestParam(defaultValue = "0") @Min(0) @PositiveOrZero int from,
             @RequestParam(defaultValue = "10") @Min(1) @Positive int size) {
 
-        LocalDateTime startDateTime = null;
-        LocalDateTime endDateTime = null;
+        // Фильтрация пустых списков
+        List<Long> filteredUsers = (users != null && !users.isEmpty()) ? users : null;
+        List<EventState> filteredStates = (states != null && !states.isEmpty()) ? states : null;
+        List<Long> filteredCategories = (categories != null && !categories.isEmpty()) ? categories : null;
 
-        try {
-            startDateTime = rangeStart != null ? parseDateTime(rangeStart) : null;
-            endDateTime = rangeEnd != null ? parseDateTime(rangeEnd) : null;
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+        // Обработка дат
+        LocalDateTime startDateTime = parseDateTime(rangeStart);
+        LocalDateTime endDateTime = parseDateTime(rangeEnd);
 
         if (startDateTime != null && endDateTime != null && startDateTime.isAfter(endDateTime)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Дата начала диапазона должна быть раньше даты окончания");
         }
 
-        try {
-            return eventService.searchEvents(
-                    users,
-                    states,
-                    categories,
-                    startDateTime,
-                    endDateTime,
-                    from,
-                    size
-            );
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Ошибка при поиске событий", e);
-        }
+        return eventService.searchEvents(
+                filteredUsers,
+                filteredStates,
+                filteredCategories,
+                startDateTime,
+                endDateTime,
+                from,
+                size
+        );
     }
 
     private LocalDateTime parseDateTime(String dateTime) {
+        if (dateTime == null) return null;
         try {
             return LocalDateTime.parse(dateTime, FORMATTER);
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Некорректный формат даты. Ожидается: yyyy-MM-dd HH:mm:ss");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Некорректный формат даты. Используйте yyyy-MM-dd HH:mm:ss");
         }
     }
 

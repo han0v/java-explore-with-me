@@ -13,7 +13,6 @@ import ru.practicum.model.Location;
 import java.time.LocalDateTime;
 
 @Data
-@Builder(builderClassName = "NewEventDtoBuilder")
 @NoArgsConstructor
 @AllArgsConstructor
 @Validated
