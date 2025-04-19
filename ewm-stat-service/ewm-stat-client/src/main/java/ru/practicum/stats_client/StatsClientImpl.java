@@ -27,7 +27,7 @@ public class StatsClientImpl implements StatsClient {
 
     private final RestTemplate restTemplate;
 
-    @Value("${stats-server.url:http://localhost:9090}")
+    @Value("${stats.client.base-url:http://localhost:9090}")
     private String serverUrl;
 
     @Override
