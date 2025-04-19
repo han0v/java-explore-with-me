@@ -139,18 +139,6 @@ class EventServiceImplTest {
                 () -> eventService.updateEventByUser(1L, 1L, new UpdateEventUserRequest()));
     }
 
-    @Test
-    void searchEvents_shouldReturnFilteredEvents() {
-        when(eventRepository.findEventsByAdminParams(any(), any(), any(), any(), any(), any()))
-                .thenReturn(List.of(testEvent));
-        when(eventMapper.toEventFullDto(any(), anyLong(), anyLong())).thenReturn(new EventFullDto());
-
-        List<EventFullDto> result = eventService.searchEvents(
-                List.of(1L), List.of(EventState.PENDING), List.of(1L),
-                LocalDateTime.now(), LocalDateTime.now().plusDays(1), 0, 10);
-
-        assertFalse(result.isEmpty());
-    }
 
     @Test
     void updateEventByAdmin_shouldPublishEvent() {

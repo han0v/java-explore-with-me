@@ -114,7 +114,7 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     public List<EventFullDto> searchEvents(
             List<Long> users,
-            List<EventState> states,
+            List<String> states,
             List<Long> categories,
             LocalDateTime rangeStart,
             LocalDateTime rangeEnd,

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.UpdateEventAdminRequest;
-import ru.practicum.model.EventState;
 import ru.practicum.service.event.EventService;
 
 import java.time.LocalDateTime;
@@ -31,7 +30,7 @@ public class AdminEventController {
     @GetMapping
     public List<EventFullDto> searchEvents(
             @RequestParam(required = false) List<Long> users,
-            @RequestParam(required = false) List<EventState> states,
+            @RequestParam(required = false) List<String> states,
             @RequestParam(required = false) List<Long> categories,
             @RequestParam(required = false) String rangeStart,
             @RequestParam(required = false) String rangeEnd,
@@ -39,7 +38,7 @@ public class AdminEventController {
             @RequestParam(defaultValue = "10") @Min(1) @Positive int size) {
 
         List<Long> filteredUsers = (users == null || users.isEmpty()) ? null : users;
-        List<EventState> filteredStates = (states == null || states.isEmpty()) ? null : states;
+        List<String> filteredStates = (states == null || states.isEmpty()) ? null : states;
         List<Long> filteredCategories = (categories == null || categories.isEmpty()) ? null : categories;
 
         LocalDateTime startDateTime = parseDateTime(rangeStart);
