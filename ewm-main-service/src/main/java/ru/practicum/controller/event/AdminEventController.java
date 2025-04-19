@@ -38,12 +38,10 @@ public class AdminEventController {
             @RequestParam(defaultValue = "0") @Min(0) @PositiveOrZero int from,
             @RequestParam(defaultValue = "10") @Min(1) @Positive int size) {
 
-        // Фильтрация пустых списков
-        List<Long> filteredUsers = (users != null && !users.isEmpty()) ? users : null;
-        List<EventState> filteredStates = (states != null && !states.isEmpty()) ? states : null;
-        List<Long> filteredCategories = (categories != null && !categories.isEmpty()) ? categories : null;
+        List<Long> filteredUsers = (users == null || users.isEmpty()) ? null : users;
+        List<EventState> filteredStates = (states == null || states.isEmpty()) ? null : states;
+        List<Long> filteredCategories = (categories == null || categories.isEmpty()) ? null : categories;
 
-        // Обработка дат
         LocalDateTime startDateTime = parseDateTime(rangeStart);
         LocalDateTime endDateTime = parseDateTime(rangeEnd);
 
@@ -64,7 +62,9 @@ public class AdminEventController {
     }
 
     private LocalDateTime parseDateTime(String dateTime) {
-        if (dateTime == null) return null;
+        if (dateTime == null || dateTime.isBlank()) {
+            return null;
+        }
         try {
             return LocalDateTime.parse(dateTime, FORMATTER);
         } catch (DateTimeParseException e) {
