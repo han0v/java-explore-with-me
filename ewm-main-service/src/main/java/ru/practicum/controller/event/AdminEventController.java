@@ -50,7 +50,6 @@ public class AdminEventController {
             }
         }
 
-        // Остальная логика
         return eventService.searchEvents(
                 users,
                 stateEnums,
