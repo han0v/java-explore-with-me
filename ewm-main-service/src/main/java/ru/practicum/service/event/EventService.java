@@ -8,6 +8,7 @@ import ru.practicum.dto.participationRequest.EventRequestStatusUpdateResult;
 import ru.practicum.dto.participationRequest.ParticipationRequestDto;
 import ru.practicum.model.EventSearchParams;
 import ru.practicum.model.EventSort;
+import ru.practicum.model.EventState;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,7 +24,7 @@ public interface EventService {
 
     // --- ADMIN API ---
 
-    List<EventFullDto> searchEvents(List<Long> users, List<String> states,
+    List<EventFullDto> searchEvents(List<Long> users, List<EventState> states,
                                     List<Long> categories, LocalDateTime rangeStart,
                                     LocalDateTime rangeEnd, int from, int size);
 

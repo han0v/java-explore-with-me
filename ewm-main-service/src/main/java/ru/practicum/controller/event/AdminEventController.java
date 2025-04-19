@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.UpdateEventAdminRequest;
+import ru.practicum.model.EventState;
 import ru.practicum.service.event.EventService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/admin/events")
@@ -37,24 +39,24 @@ public class AdminEventController {
             @RequestParam(defaultValue = "0") @Min(0) @PositiveOrZero int from,
             @RequestParam(defaultValue = "10") @Min(1) @Positive int size) {
 
-        List<Long> filteredUsers = (users == null || users.isEmpty()) ? null : users;
-        List<String> filteredStates = (states == null || states.isEmpty()) ? null : states;
-        List<Long> filteredCategories = (categories == null || categories.isEmpty()) ? null : categories;
-
-        LocalDateTime startDateTime = parseDateTime(rangeStart);
-        LocalDateTime endDateTime = parseDateTime(rangeEnd);
-
-        if (startDateTime != null && endDateTime != null && startDateTime.isAfter(endDateTime)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Дата начала диапазона должна быть раньше даты окончания");
+        List<EventState> stateEnums = null;
+        if (states != null && !states.isEmpty()) {
+            try {
+                stateEnums = states.stream()
+                        .map(EventState::valueOf)
+                        .collect(Collectors.toList());
+            } catch (IllegalArgumentException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid state value");
+            }
         }
 
+        // Остальная логика
         return eventService.searchEvents(
-                filteredUsers,
-                filteredStates,
-                filteredCategories,
-                startDateTime,
-                endDateTime,
+                users,
+                stateEnums,
+                categories,
+                parseDateTime(rangeStart),
+                parseDateTime(rangeEnd),
                 from,
                 size
         );
