@@ -6,7 +6,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import ru.practicum.ViewStats;
-import ru.practicum.model.EndpointHitEntity;
+import ru.practicum.stats.model.EndpointHitEntity;
+import ru.practicum.stats.service.StatsRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -3,7 +3,8 @@ package ru.practicum.mapper;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import ru.practicum.EndpointHit;
-import ru.practicum.model.EndpointHitEntity;
+import ru.practicum.stats.mapper.EndpointHitMapper;
+import ru.practicum.stats.model.EndpointHitEntity;
 
 import java.time.LocalDateTime;
 
