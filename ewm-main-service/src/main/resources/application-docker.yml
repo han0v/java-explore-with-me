@@ -1,0 +1,4 @@
+
+stats:
+  client:
+    base-url: http://stats-server:9090
