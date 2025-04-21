@@ -111,5 +111,16 @@ public class ErrorHandler {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiError handleThrowable(Throwable e) {
+        return ApiError.builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.toString())
+                .message("An unexpected error occurred: " + e.getMessage())
+                .reason("Internal Server Error")
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
 }
 

@@ -10,7 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import ru.practicum.model.Location;
 
 import java.time.LocalDateTime;
@@ -19,7 +18,6 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Validated
 public class UpdateEventUserRequest {
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     @Size(min = 20, max = 2000, message = "Annotation must be between 20 and 2000 characters")

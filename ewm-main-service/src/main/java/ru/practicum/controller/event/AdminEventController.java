@@ -36,8 +36,8 @@ public class AdminEventController {
             @RequestParam(required = false) List<Long> categories,
             @RequestParam(required = false) String rangeStart,
             @RequestParam(required = false) String rangeEnd,
-            @RequestParam(defaultValue = "0") @Min(0) @PositiveOrZero int from,
-            @RequestParam(defaultValue = "10") @Min(1) @Positive int size) {
+            @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+            @RequestParam(defaultValue = "10") @Positive int size) {
 
         List<EventState> stateEnums = null;
         if (states != null && !states.isEmpty()) {

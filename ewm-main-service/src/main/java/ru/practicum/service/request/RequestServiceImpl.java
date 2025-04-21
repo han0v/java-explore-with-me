@@ -26,7 +26,6 @@ public class RequestServiceImpl implements RequestService {
     private final EventRepository eventRepository;
     private final RequestMapper requestMapper;
 
-    LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
 
     @Override
     public List<ParticipationRequestDto> getUserRequests(Long userId) {
@@ -37,6 +36,8 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public ParticipationRequestDto createRequest(Long userId, Long eventId) {
+        final LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
         Event event = eventRepository.findById(eventId)

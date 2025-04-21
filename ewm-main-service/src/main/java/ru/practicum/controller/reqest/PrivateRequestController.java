@@ -1,10 +1,10 @@
 package ru.practicum.controller.reqest;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.participationRequest.ParticipationRequestDto;
@@ -12,7 +12,7 @@ import ru.practicum.service.request.RequestService;
 
 import java.util.List;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
 @RequestMapping("/users/{userId}/requests")
 @Validated
@@ -26,7 +26,7 @@ public class PrivateRequestController {
 
     @PostMapping
     public ResponseEntity<ParticipationRequestDto> createRequest(@PathVariable Long userId,
-                                                                 @RequestParam @Valid @NotNull Long eventId) {
+                                                                 @RequestParam @NotNull Long eventId) {
         return new ResponseEntity<>(requestService.createRequest(userId, eventId), HttpStatus.CREATED);
     }
 

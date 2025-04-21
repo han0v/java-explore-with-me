@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import ru.practicum.model.Location;
 
 import java.time.LocalDateTime;
@@ -16,7 +15,6 @@ import java.time.LocalDateTime;
 @Builder(builderClassName = "NewEventDtoBuilder")
 @NoArgsConstructor
 @AllArgsConstructor
-@Validated
 public class NewEventDto {
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     @NotBlank(message = "Annotation cannot be blank")
