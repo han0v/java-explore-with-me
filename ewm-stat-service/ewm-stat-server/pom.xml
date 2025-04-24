@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>ewm-stat-service</artifactId>
-        <groupId>ru.yandex.practicum</groupId>
+        <groupId>ru.practicum</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
@@ -36,7 +36,7 @@
         </dependency>
 
         <dependency>
-            <groupId>ru.yandex.practicum</groupId>
+            <groupId>ru.practicum</groupId>
             <artifactId>ewm-stat-dto</artifactId>
             <version>${project.version}</version>
         </dependency>
