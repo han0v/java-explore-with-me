@@ -75,7 +75,6 @@ CREATE INDEX IF NOT EXISTS idx_comments_user ON event_comments(user_id);
 CREATE INDEX IF NOT EXISTS idx_comments_created ON event_comments(created_at);
 CREATE INDEX IF NOT EXISTS idx_comments_reported ON event_comments(report_count);
 CREATE INDEX IF NOT EXISTS idx_comments_deleted ON event_comments(is_deleted);
-
 CREATE INDEX IF NOT EXISTS idx_comment_reports_comment ON comment_reports(comment_id);
 CREATE INDEX IF NOT EXISTS idx_comment_reports_user ON comment_reports(user_id);
 
