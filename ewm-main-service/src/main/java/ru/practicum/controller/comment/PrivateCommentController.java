@@ -46,12 +46,13 @@ public class PrivateCommentController {
 
     @PostMapping("/{commentId}/report")
     @ResponseStatus(HttpStatus.CREATED)
-    public void reportComment(
+    public CommentDto reportComment(
             @PathVariable Long userId,
             @PathVariable Long eventId,
             @PathVariable Long commentId,
             @RequestBody @Valid CommentReportDto reportDto) {
         commentService.reportComment(userId, eventId, commentId, reportDto);
+        return commentService.getCommentById(eventId, commentId);
     }
 
     @GetMapping
