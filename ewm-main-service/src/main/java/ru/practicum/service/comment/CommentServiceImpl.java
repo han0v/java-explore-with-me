@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CommentServiceImpl implements CommentService {
     private static final int REPORT_THRESHOLD = 10;
 
@@ -108,7 +109,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public CommentDto getCommentById(Long eventId, Long commentId) {
         Comment comment = getCommentOrThrow(commentId, eventId);
         if (comment.getIsDeleted()) {
@@ -118,7 +118,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<CommentDto> getEventComments(Long eventId, Integer from, Integer size) {
         getEventOrThrow(eventId);
         PageRequest pageRequest = PageRequest.of(from / size, size);
@@ -129,7 +128,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<CommentDto> getUserComments(Long userId, Long eventId, Integer from, Integer size) {
         getUserOrThrow(userId);
         getEventOrThrow(eventId);
@@ -141,7 +139,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<CommentDto> getReportedComments(Integer from, Integer size) {
         PageRequest pageRequest = PageRequest.of(from / size, size);
         return commentRepository.findAllReportedComments(pageRequest)
@@ -151,7 +148,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<CommentDto> getDeletedComments(Integer from, Integer size) {
         PageRequest pageRequest = PageRequest.of(from / size, size);
         return commentRepository.findAllDeletedComments(pageRequest)

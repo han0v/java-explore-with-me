@@ -35,7 +35,6 @@ public class EventRepositoryImpl implements EventRepositoryCustom {
             EventSort sort,
             Pageable pageable
     ) {
-        // Валидация временного диапазона
         if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
             throw new IllegalArgumentException("Дата начала диапазона не может быть позже даты окончания");
         }

@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
@@ -62,7 +63,6 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<EventShortDto> getUserEvents(Long userId, int from, int size) {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException("User not found");
@@ -81,7 +81,6 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public EventFullDto getUserEventById(Long userId, Long eventId) {
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new NotFoundException("Event not found"));
@@ -112,7 +111,6 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<EventFullDto> searchEvents(List<Long> users, List<EventState> states, List<Long> categories,
                                            LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
 
@@ -161,7 +159,6 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<EventShortDto> getPublicEvents(EventSearchParams params, String sort, int from, int size, HttpServletRequest request) {
         saveEventViewStats(null, request);
 
@@ -186,7 +183,6 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public EventFullDto getPublicEventById(Long id, HttpServletRequest request) {
         Event event = eventRepository.findByIdAndState(id, EventState.PUBLISHED)
                 .orElseThrow(() -> new NotFoundException("Event not found or not published"));
@@ -196,7 +192,6 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<ParticipationRequestDto> getEventRequests(Long userId, Long eventId) {
         if (!eventRepository.existsByIdAndInitiatorId(eventId, userId)) {
             throw new NotFoundException("Event not found or user is not initiator");
@@ -255,7 +250,6 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<EventShortDto> getPublicEventsWithFilters(
             String text,
             List<Long> categories,
