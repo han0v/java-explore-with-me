@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CategoryServiceImpl implements CategoryService {
     private final EventRepository eventRepository;
     private final CategoryRepository categoryRepository;
@@ -67,7 +68,6 @@ public class CategoryServiceImpl implements CategoryService {
 
 
     @Override
-    @Transactional(readOnly = true)
     public List<CategoryDto> getCategories(Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from / size, size);
         return categoryRepository.findAll(pageable).stream()
@@ -76,7 +76,6 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public CategoryDto getCategoryById(Long catId) {
         return categoryMapper.toCategoryDto(
                 categoryRepository.findById(catId)
